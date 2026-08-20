@@ -55,6 +55,9 @@ sudo pacman -S --needed tar 7zip unrar
 echo "installing system info & monitoring"
 sudo pacman -S --needed btop fastfetch texinfo
 
+echo "creating fastfetch default config"
+fastfetch --gen-config
+
 echo "better cli tools"
 sudo pacman -S --needed bat eza fd ripgrep fzf rsync which
 
@@ -113,6 +116,11 @@ alias la='eza -la --git'
 alias tree='eza --tree'
 alias vim='nvim'
 
+# run FastFetch in interactive terminals (ghostty)
+if [[ -o interactive ]]; then
+	fastfetch -c paleofetch
+fi
+
 # Starship
 eval "$(starship init zsh)"
 EOF
@@ -126,27 +134,42 @@ fi
 EOF
 
 echo "making basic starship conifg"
-cat > ~/.config/starship.toml << 'EOF'
-# Get editor completions based on the config schema
-"$schema" = "https://starship.rs/config-schema.json"
-
-# Insert blank line between shell prompts
-add_newline = true
-
-[character]
-success_symbol ="[→](bold green)"
-error_symbol ="[→](bold red)"
-EOF
+starship preset nerd-font-symbols -o ~/.config/starship.toml
 
 echo "setting the font"
 echo "making the ~/.config/ghostty"
 mkdir -p ~/.config/ghostty
 echo "writing the config file"
 cat > ~/.config/ghostty/config << 'EOF'
+# Font
 font-family = FiraCode Nerd Font
-# font-size = 12
+font-size = 12
+
+# Window
+window-padding-x = 10
+window-padding-y = 8
+window-decoration = true
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+
+# Clipboard
+copy-on-select = true
+
+# Keybinds for copy/paste
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
+
+# Other
+confirm-close-surface = false
+shell-integration = zsh
+
+# Transparency
+background-opacity = 0.85
+background-blur = true
 EOF
-echo "Font has been set"
+echo "Font has been set to FiraCode Nerd and ghostty base config has been made"
 
 echo "setting up hyprland"
 echo "making hyprland config dir in ~/.config/hypr"
